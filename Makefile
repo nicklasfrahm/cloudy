@@ -12,3 +12,7 @@ output/$(BOARD)-$(VERSION).img:
 config:
 	./$(ARMBIAN_DIR)/compile.sh BOARD=$(BOARD) BRANCH=edge kernel-config
 	find $(ARMBIAN_DIR)/userpatches -name '*.config' -exec cp {} config/userpatches \;
+
+.PHONY: update
+update:
+	git submodule update --remote $(ARMBIAN_DIR)
