@@ -7,10 +7,10 @@ RED='\033[0;31m'
 CLEAR='\033[0m'
 PATCH_DIR="config/userpatches"
 BUILD_DIR="third_party/armbian-build"
-BOARD_NANOPI_R5S="nanopi-r5s"
 USERNAME="nicklasfrahm"
 
 # Global variables.
+supported_boards=("nanopi-r5s")
 board=""
 version=""
 
@@ -22,7 +22,6 @@ parse_args() {
   board="$1"
   version="$2"
 
-  supported_boards=("$BOARD_NANOPI_R5S")
   is_supported_board=false
   for supported_board in "${supported_boards[@]}"; do
     if [[ "$supported_board" == "$board" ]]; then
@@ -40,16 +39,6 @@ parse_args() {
 apply_customizations() {
   # Copy the patch files into the build system.
   cp -r "$PATCH_DIR" third_party/armbian-build
-}
-
-# Compare the kernel config and install the patched config that enables wireguard.
-patch_kernel_config() {
-  if [[ "$board" == "$BOARD_NANOPI_R5S" ]]; then
-    # Display diff of the kernel config. We expect a diff, so we ignore the exit code.
-    kernel_config_file="$BOARD_NANOPI_R5S_KERNEL_CONFIG_FILE"
-    diff --color=always -u "$BUILD_DIR/$kernel_config_file" "$BUILD_CUSTOMIZATION_DIR/$kernel_config_file" || true
-    cp -f "$BUILD_CUSTOMIZATION_DIR/$kernel_config_file" "$BUILD_DIR/$kernel_config_file"
-  fi
 }
 
 # Build the firmware image.
@@ -70,7 +59,12 @@ build_firmware() {
       CRYPTROOT_SSH_UNLOCK_PORT=2222 \
       RELEASE=jammy
 
-    show_notes
+    # Cryptroot parameters are configured via build parameters above. For more information, see:
+    # Reference: https://github.com/armbian/build/commit/681e58b6689acda6a957e325f12e7b748faa8330
+    echo
+    echo -e "${RED}CRYPTROOT PASSPHRASE MUST BE ROTATED ON FIRST LOGIN:${CLEAR}"
+    echo -e "  sudo cryptsetup luksChangeKey /dev/mmcblk0p2"
+    echo
   fi
 
   "./$BUILD_DIR/compile.sh" build \
@@ -90,20 +84,10 @@ move_firmware() {
   mv "$image_file" "output/${board}-${version}.img"
 }
 
-show_notes() {
-  # Cryptroot parameters are configured via build parameters above. For more information, see:
-  # Reference: https://github.com/armbian/build/commit/681e58b6689acda6a957e325f12e7b748faa8330
-  echo
-  echo -e "${RED}CRYPTROOT PASSPHRASE MUST BE ROTATED ON FIRST LOGIN:${CLEAR}"
-  echo -e "  sudo cryptsetup luksChangeKey /dev/mmcblk0p2"
-  echo
-}
-
 main() {
   parse_args "$@"
 
   apply_customizations
-  patch_kernel_config
 
   build_firmware
   move_firmware
