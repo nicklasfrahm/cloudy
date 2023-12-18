@@ -15,3 +15,10 @@ config:
 .PHONY: update
 update:
 	git submodule update --remote $(ARMBIAN_DIR)
+
+.PHONY: reset
+reset:
+	git reset --hard
+	git clean -fd
+	git submodule foreach --recursive git reset --hard
+	git submodule foreach --recursive git clean -fd
