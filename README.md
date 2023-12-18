@@ -15,7 +15,7 @@ make build
 
 ## 📜 License
 
-Because this software includes GPL licensed software, the whole project is licensed under the GPL v3.0 license. See the [LICENSE][license] file for more information.
+The whole project is licensed under the [GPL-2.0 license][license].
 
 [armbian]: https://github.com/armbian/build
 [nanopi-r5s]: https://www.friendlyelec.com/index.php?route=product/product&product_id=287
