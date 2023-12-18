@@ -7,6 +7,7 @@ RED='\033[0;31m'
 CLEAR='\033[0m'
 PATCH_DIR="config/userpatches"
 BUILD_DIR="third_party/armbian-build"
+OUTPUT_DIR="output"
 USERNAME="nicklasfrahm"
 
 # Global variables.
@@ -37,8 +38,11 @@ parse_args() {
 
 # Add customizations to the armbian build system.
 apply_customizations() {
+  # Ensure that we can overwrite the kernel configs.
+  sudo chown "$(whoami):$(whoami)" $BUILD_DIR/userpatches/*.config
+
   # Copy the patch files into the build system.
-  cp -r "$PATCH_DIR" third_party/armbian-build
+  cp -r "$PATCH_DIR" "$BUILD_DIR"
 }
 
 # Build the firmware image.
@@ -79,9 +83,9 @@ build_firmware() {
 
 # Move the firmware image to the output directory in the root repo.
 move_firmware() {
-  mkdir -p output
+  mkdir -p "$OUTPUT_DIR"
   image_file=$(find "$BUILD_DIR/output/images/" -iname "*$board*.img" | sort -rV | head -n1)
-  mv "$image_file" "output/${board}-${version}.img"
+  mv "$image_file" "$OUTPUT_DIR/${board}-${version}.img"
 }
 
 main() {

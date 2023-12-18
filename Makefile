@@ -5,7 +5,6 @@ ARMBIAN_DIR	?= third_party/armbian-build
 build: output/$(BOARD)-$(VERSION).img
 
 output/$(BOARD)-$(VERSION).img:
-	mkdir -p output
 	./scripts/build.sh $(BOARD) $(VERSION)
 
 .PHONY: config
