@@ -10,7 +10,7 @@ output/$(BOARD)-$(VERSION).img:
 .PHONY: config
 config:
 	./$(ARMBIAN_DIR)/compile.sh BOARD=$(BOARD) BRANCH=edge kernel-config
-	find $(ARMBIAN_DIR)/userpatches -name '*.config' -exec cp {} config/userpatches \;
+	find $(ARMBIAN_DIR)/output/config -name '*.config' -exec cp {} config/userpatches \;
 
 .PHONY: update
 update:
