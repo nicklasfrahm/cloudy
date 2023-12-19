@@ -144,6 +144,9 @@ configure_cloud_init() {
   cp /tmp/overlay/cloud-init/user-data /boot/cloud-init/user-data
   cp /tmp/overlay/cloud-init/meta-data /boot/cloud-init/meta-data
   INSTANCE_ID=$(uuidgen -r) envsubst </tmp/overlay/meta-data >/boot/cloud-init/meta-data
+
+  # Configure cloud-init to use the network configuration from netplan.
+  cp /tmp/overlay/cloud-init/network-config /etc/cloud/cloud.cfg.d/90-network-config.cfg
 }
 
 # Harden OpenSSH server.
