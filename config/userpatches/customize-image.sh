@@ -134,13 +134,14 @@ configure_kboot() {
 # Set up cloud-init.
 # Reference: https://forum.armbian.com/topic/14616-cloud-init/
 configure_cloud_init() {
-  apt-get install -y cloud-init
+  apt-get install -y cloud-init uuid-runtime
 
   # Configure cloud-init data source via kernel command line.
+  grub_config="/etc/default/grub"
   extra_kernel_args="ds=nocloud;s=file://boot/cloud-init/"
-  if [[ -d "/etc/default/grub.d" ]]; then
-    echo "Using GRUB2 ..."
-    echo "GRUB_CMDLINE_LINUX_DEFAULT=\"\$GRUB_CMDLINE_LINUX_DEFAULT '$extra_kernel_args'\"" >/etc/default/grub.d/50-cloud-init.cfg
+  if [[ -d "$grub_config" ]]; then
+    echo "Using GRUB ..."
+    sed -i "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"'$extra_kernel_args'\"|" "$grub_config"
   else
     echo "Using u-boot ..."
     echo "extraargs=$extra_kernel_args" >>/boot/armbianEnv.txt
@@ -150,8 +151,7 @@ configure_cloud_init() {
   # after image build to reduce build time and improve flexibility.
   mkdir -p /boot/cloud-init
   cp /tmp/overlay/cloud-init/user-data /boot/cloud-init/user-data
-  cp /tmp/overlay/cloud-init/meta-data /boot/cloud-init/meta-data
-  INSTANCE_ID=$(uuidgen -r) envsubst </tmp/overlay/meta-data >/boot/cloud-init/meta-data
+  INSTANCE_ID=$(uuidgen -r) envsubst </tmp/overlay/cloud-init/meta-data >/boot/cloud-init/meta-data
 
   # Configure cloud-init to use the network configuration from netplan.
   cp /tmp/overlay/cloud-init/network-config /etc/cloud/cloud.cfg.d/90-network-config.cfg
