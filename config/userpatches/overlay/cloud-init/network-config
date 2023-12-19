@@ -2,19 +2,20 @@ network:
   version: 2
   renderer: networkd
   ethernets:
-    lo:
-      match:
-        name: lo
-      addresses:
-        - 172.31.255.3/32
     wan:
+      match:
+        name: en*
+      optional: true
       dhcp4: true
-      dhcp6: false
-    lan1:
-      dhcp4: false
-      dhcp6: false
-      optional: true
-    lan2:
-      dhcp4: false
-      dhcp6: false
-      optional: true
+      dhcp4-overrides:
+        use-dns: false
+      dhcp6: true
+      dhcp6-overrides:
+        use-dns: false
+      nameservers:
+        addresses:
+          - 1.1.1.1
+          - 1.0.0.1
+        search:
+          - srv.nicklasfrahm.dev
+          - nicklasfrahm.dev
