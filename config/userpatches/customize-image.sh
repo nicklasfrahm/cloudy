@@ -139,9 +139,10 @@ configure_cloud_init() {
   # Configure cloud-init data source via kernel command line.
   grub_config="/etc/default/grub"
   extra_kernel_args="ds=nocloud;s=file://boot/cloud-init/"
-  if [[ -d "$grub_config" ]]; then
+  if [[ -f "$grub_config" ]]; then
     echo "Using GRUB ..."
     sed -i "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"'$extra_kernel_args'\"|" "$grub_config"
+    update-grub
   else
     echo "Using u-boot ..."
     echo "extraargs=$extra_kernel_args" >>/boot/armbianEnv.txt
