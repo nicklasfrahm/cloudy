@@ -3,6 +3,7 @@
 An [Armbian][armbian]-based firmware image that uses cloud-init for configuration. So far the following boards are supported:
 
 - [`nanopi-r5s`][nanopi-r5s]
+- `uefi-x86`
 
 ## 🚀 Quickstart
 

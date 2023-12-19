@@ -38,9 +38,6 @@ parse_args() {
 
 # Add customizations to the armbian build system.
 apply_customizations() {
-  # Ensure that we can overwrite the kernel configs.
-  sudo chown "$(whoami):$(whoami)" $BUILD_DIR/userpatches/*.config
-
   # Copy the patch files into the build system.
   cp -r "$PATCH_DIR" "$BUILD_DIR"
 }
