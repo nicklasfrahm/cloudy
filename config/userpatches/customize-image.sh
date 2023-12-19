@@ -135,12 +135,20 @@ configure_kboot() {
 # Reference: https://forum.armbian.com/topic/14616-cloud-init/
 configure_cloud_init() {
   apt-get install -y cloud-init
-  mkdir -p /boot/cloud-init
+
   # Configure cloud-init data source via kernel command line.
-  echo "extraargs=ds=nocloud;s=file://boot/cloud-init/" >>/boot/armbianEnv.txt
+  extra_kernel_args="ds=nocloud;s=file://boot/cloud-init/"
+  if [[ -d "/etc/default/grub.d" ]]; then
+    echo "Using GRUB2 ..."
+    echo "GRUB_CMDLINE_LINUX_DEFAULT=\"\$GRUB_CMDLINE_LINUX_DEFAULT '$extra_kernel_args'\"" >/etc/default/grub.d/50-cloud-init.cfg
+  else
+    echo "Using u-boot ..."
+    echo "extraargs=$extra_kernel_args" >>/boot/armbianEnv.txt
+  fi
 
   # TODO: Investigate how we can inject cloud-init configuration
   # after image build to reduce build time and improve flexibility.
+  mkdir -p /boot/cloud-init
   cp /tmp/overlay/cloud-init/user-data /boot/cloud-init/user-data
   cp /tmp/overlay/cloud-init/meta-data /boot/cloud-init/meta-data
   INSTANCE_ID=$(uuidgen -r) envsubst </tmp/overlay/meta-data >/boot/cloud-init/meta-data
