@@ -4,7 +4,7 @@ network:
   ethernets:
     any:
       match:
-        name: en*
+        name: "*"
       optional: true
       dhcp4: true
       dhcp4-overrides:
