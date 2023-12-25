@@ -58,6 +58,7 @@ build_firmware() {
       CRYPTROOT_PASSPHRASE="$USERNAME" \
       CRYPTROOT_SSH_UNLOCK=yes \
       CRYPTROOT_SSH_UNLOCK_PORT=2222 \
+      COMPRESS_OUTPUTIMAGE=yes \
       RELEASE=jammy
 
     # Cryptroot parameters are configured via build parameters above. For more information, see:
@@ -75,6 +76,7 @@ build_firmware() {
     BUILD_MINIMAL=yes \
     KERNEL_CONFIGURE=no \
     ROOTFS_TYPE=btrfs \
+    COMPRESS_OUTPUTIMAGE=yes \
     RELEASE=jammy
 }
 

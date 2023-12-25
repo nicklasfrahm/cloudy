@@ -1,0 +1,66 @@
+name: Build
+
+on:
+  pull_request:
+    branches:
+      - main
+      - beta
+  push:
+    branches:
+      - main
+      - beta
+  workflow_dispatch:
+
+jobs:
+  images:
+    name: Images
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        board:
+          - nanopi-r5s
+          - uefi-x86
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: sudo apt-get install -y --no-install-recommends build-essential
+
+      - name: Fetch version from git history
+        uses: codfish/semantic-release-action@v3
+        id: semantic
+        with:
+          dry-run: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build firmware images
+        run: VERSION=v${{ steps.semantic.outputs.release-version }} BOARD=${{ matrix.board }} make build
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.board }}
+          path: output/*
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    if: github.ref_protected == true && github.event_name == 'push'
+    needs: [images]
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Download release artifacts
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          path: release
+
+      - name: Create release
+        uses: codfish/semantic-release-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
