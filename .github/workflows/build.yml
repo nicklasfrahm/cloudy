@@ -17,8 +17,8 @@ permissions:
   pull-requests: write
 
 jobs:
-  images:
-    name: Images
+  image:
+    name: Image
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -32,6 +32,19 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Fetch armbian version
+        id: armbian
+        run: echo "version=$(git submodule status third_party/armbian-build/ | cut -d ' ' -f 2)" >>"$GITHUB_OUTPUT"
+
+      - name: Cache armbian build
+        uses: actions/cache@v3
+        with:
+          path: third_party/armbian-build/cache
+          key: image-${{ matrix.board }}-${{ steps.armbian.outputs.version }}
+          restore-keys: |
+            image-${{ matrix.board }}-
+            image-
+
       - name: Install build dependencies
         run: sudo apt-get install -y --no-install-recommends build-essential
 
@@ -43,25 +56,27 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build firmware images
+      - name: Build firmware image
         run: VERSION=v${{ steps.semantic.outputs.release-version }} BOARD=${{ matrix.board }} make build
 
-      - name: Upload binary
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.board }}
-          path: output/*
+          path: |
+            output/*.gz
+            output/*.sha256
 
   release:
     name: Release
     runs-on: ubuntu-latest
     if: github.ref_protected == true && github.event_name == 'push'
-    needs: [images]
+    needs: [image]
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
 
-      - name: Download release artifacts
+      - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           merge-multiple: true

@@ -134,7 +134,7 @@ configure_kboot() {
 # Set up cloud-init.
 # Reference: https://forum.armbian.com/topic/14616-cloud-init/
 configure_cloud_init() {
-  apt-get install -y cloud-init uuid-runtime
+  apt-get install -y cloud-init uuid-runtime gettext
 
   # Configure cloud-init data source via kernel command line.
   grub_config="/etc/default/grub"

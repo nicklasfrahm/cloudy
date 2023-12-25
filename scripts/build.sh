@@ -58,7 +58,6 @@ build_firmware() {
       CRYPTROOT_PASSPHRASE="$USERNAME" \
       CRYPTROOT_SSH_UNLOCK=yes \
       CRYPTROOT_SSH_UNLOCK_PORT=2222 \
-      COMPRESS_OUTPUTIMAGE=yes \
       RELEASE=jammy
 
     # Cryptroot parameters are configured via build parameters above. For more information, see:
@@ -76,7 +75,6 @@ build_firmware() {
     BUILD_MINIMAL=yes \
     KERNEL_CONFIGURE=no \
     ROOTFS_TYPE=btrfs \
-    COMPRESS_OUTPUTIMAGE=yes \
     RELEASE=jammy
 }
 
@@ -85,6 +83,10 @@ move_firmware() {
   mkdir -p "$OUTPUT_DIR"
   image_file=$(find "$BUILD_DIR/output/images/" -iname "*$board*.img" | sort -rV | head -n1)
   mv "$image_file" "$OUTPUT_DIR/${board}-${version}.img"
+
+  # Compress the image file and compute the sha256sum.
+  gzip -k "$OUTPUT_DIR/${board}-${version}.img"
+  sha256sum "$OUTPUT_DIR/${board}-${version}.img.gz" | sed "s|$OUTPUT_DIR||g" >"$OUTPUT_DIR/${board}-${version}.img.gz.sha256"
 }
 
 main() {
