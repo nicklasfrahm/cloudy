@@ -26,6 +26,7 @@ jobs:
         board:
           - nanopi-r5s
           - uefi-x86
+          - rpi4b
     steps:
       - name: Clone repository
         uses: actions/checkout@v4

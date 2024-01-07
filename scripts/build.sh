@@ -11,7 +11,7 @@ OUTPUT_DIR="output"
 USERNAME="nicklasfrahm"
 
 # Global variables.
-supported_boards=("nanopi-r5s" "uefi-x86")
+supported_boards=("nanopi-r5s" "uefi-x86" "rpi4b")
 board=""
 version=""
 
