@@ -11,7 +11,6 @@ OUTPUT_DIR="output"
 USERNAME="nicklasfrahm"
 
 # Global variables.
-supported_boards=("nanopi-r5s" "uefi-x86" "rpi4b")
 board=""
 version=""
 
@@ -22,6 +21,9 @@ parse_args() {
   fi
   board="$1"
   version="$2"
+
+  # Fetch supported boards from CI configuration.
+  mapfile -t supported_boards < <(yq '.jobs.image.strategy.matrix.board' .github/workflows/build.yml | cut -d ' ' -f 2)
 
   is_supported_board=false
   for supported_board in "${supported_boards[@]}"; do
