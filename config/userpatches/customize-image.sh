@@ -147,6 +147,7 @@ configure_cloud_init() {
     echo "Using u-boot ..."
     echo "extraargs=$extra_kernel_args" >>/boot/armbianEnv.txt
   fi
+  # TODO: Modify cmdline.txt on the RPICFG partition.
 
   # TODO: Investigate how we can inject cloud-init configuration
   # after image build to reduce build time and improve flexibility.
