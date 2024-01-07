@@ -140,14 +140,22 @@ configure_cloud_init() {
   grub_config="/etc/default/grub"
   extra_kernel_args="ds=nocloud;s=file://boot/cloud-init/"
   if [[ -f "$grub_config" ]]; then
-    echo "Using GRUB ..."
+    echo "Patching GRUB ..."
     sed -i "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"'$extra_kernel_args'\"|" "$grub_config"
     update-grub
-  else
-    echo "Using u-boot ..."
+  fi
+
+  if [[ -f "/boot/armbianEnv.txt" ]]; then
+    echo "Patching u-boot ..."
     echo "extraargs=$extra_kernel_args" >>/boot/armbianEnv.txt
   fi
-  # TODO: Modify cmdline.txt on the RPICFG partition.
+
+  cmdline_file=$(find / -name cmdline.txt 2>/dev/null | head -n 1)
+  if [[ -n "$cmdline_file" ]] && [[ -f "$cmdline_file" ]]; then
+    echo "Patching RPI u-boot ..."
+    rpi_extra_kernel_args="$extra_kernel_args cgroup_memory=1 cgroup_enable=memory cgroup_enable=cpuset"
+    sed -i "s|^\(.*\)|\1 $rpi_extra_kernel_args|" "$cmdline_file"
+  fi
 
   # TODO: Investigate how we can inject cloud-init configuration
   # after image build to reduce build time and improve flexibility.
