@@ -55,7 +55,7 @@ jobs:
           echo "yq-version=$(curl -s https://api.github.com/repos/mikefarah/yq/releases/latest | grep tag_name | grep -oE 'v[0-9a-z\.-]+')" >>"$GITHUB_OUTPUT"
 
       - name: Install yq
-        uses: chrisdickinson/setup-yq@v1.0.1
+        uses: chrisdickinson/setup-yq@latest
         with:
           yq-version: ${{ steps.yq.outputs.yq-version }}
 
