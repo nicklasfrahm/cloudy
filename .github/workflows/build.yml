@@ -47,7 +47,17 @@ jobs:
             image-
 
       - name: Install build dependencies
-        run: sudo apt-get install -y --no-install-recommends build-essential
+        run: sudo apt-get install -y --no-install-recommends build-essential curl
+
+      - name: Fetch latest version of yq
+        id: yq
+        run: |
+          echo "yq-version=$(curl -s https://api.github.com/repos/mikefarah/yq/releases/latest | grep tag_name | grep -oE 'v[0-9a-z\.-]+')" >>"$GITHUB_OUTPUT"
+
+      - name: Install yq
+        uses: chrisdickinson/setup-yq@latest
+        with:
+          yq-version: ${{ steps.yq.outputs.yq-version }}
 
       - name: Fetch version from git history
         uses: codfish/semantic-release-action@v3
