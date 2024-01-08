@@ -4,6 +4,7 @@ An [Armbian][armbian]-based firmware image that uses cloud-init for configuratio
 
 - [`nanopi-r5s`][nanopi-r5s]
 - `uefi-x86`
+- `rpi4b`
 
 ## 🚀 Quickstart
 
@@ -29,8 +30,13 @@ The `armbian-install` script does not create the right partition layout when usi
 1. SSH into the device and run the following command:
 
    ```bash
+   # Install pv to get a progress bar.
    sudo apt install -y pv
-   sudo dd if=/uefi-x86.img of=/dev/mmcblk0 bs=1M
+   # DANGER! This will overwrite the first disk on the host.
+   export TARGET_DISK=/dev/sdX
+   sudo dd if=/uefi-x86.img bs=4M |
+     pv -tpreb -s $(sudo stat -c "%s" /uefi-x86.img) |
+     sudo dd of="$TARGET_DISK" bs=4M
    ```
 
 1. Reboot the device.
