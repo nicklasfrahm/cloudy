@@ -14,6 +14,8 @@ Make sure to have a recent version of [Docker][docker], [Git][git] and `build-es
 make build
 ```
 
+After flashing the image to an SD card, you should be able to connect to it via SSH using the username `nicklasfrahm` and the `id_ed25519` private key with the comment `nicklasfrahm@gl552vw`. Alternatively, you may log in locally using the username `root` and the password `cloudy1234`.
+
 ## 💡 Known issues
 
 ### 🪄 Can't use `armbian-install` on `uefi-x86`

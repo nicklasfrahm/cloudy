@@ -40,8 +40,8 @@ configure_users() {
   rm /root/.not_logged_in_yet
 
   # Set random root password.
-  ROOT_PASSWORD=$(openssl rand -hex 32)
-  echo "root:${ROOT_PASSWORD}" | chpasswd
+  root_password="cloudy1234"
+  echo "root:$root_password" | chpasswd
 
   # Disable autologin.
   rm -f /etc/systemd/system/getty@.service.d/override.conf
