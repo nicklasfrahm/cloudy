@@ -4,6 +4,7 @@ An [Armbian][armbian]-based firmware image that uses cloud-init for configuratio
 
 - [`nanopi-r5s`][nanopi-r5s]
 - `uefi-x86`
+- `rpi4b`
 
 ## 🚀 Quickstart
 
@@ -13,6 +14,8 @@ Make sure to have a recent version of [Docker][docker], [Git][git] and `build-es
 # Build the image for the NanoPi R5S.
 make build
 ```
+
+After flashing the image to an SD card, you should be able to connect to it via SSH using the username `nicklasfrahm` and the `id_ed25519` private key with the comment `nicklasfrahm@gl552vw`. Alternatively, you may log in locally using the username `root` and the password `cloudy1234`.
 
 ## 💡 Known issues
 
@@ -27,8 +30,13 @@ The `armbian-install` script does not create the right partition layout when usi
 1. SSH into the device and run the following command:
 
    ```bash
+   # Install pv to get a progress bar.
    sudo apt install -y pv
-   sudo dd if=/uefi-x86.img of=/dev/mmcblk0 bs=1M
+   # DANGER! This will overwrite the first disk on the host.
+   export TARGET_DISK=/dev/sdX
+   sudo dd if=/uefi-x86.img bs=4M |
+     pv -tpreb -s $(sudo stat -c "%s" /uefi-x86.img) |
+     sudo dd of="$TARGET_DISK" bs=4M
    ```
 
 1. Reboot the device.
