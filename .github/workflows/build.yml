@@ -38,7 +38,7 @@ jobs:
         run: echo "version=$(git submodule status third_party/armbian-build/ | cut -d ' ' -f 2)" >>"$GITHUB_OUTPUT"
 
       - name: Cache armbian build
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: third_party/armbian-build/cache
           key: image-${{ matrix.board }}-${{ steps.armbian.outputs.version }}
